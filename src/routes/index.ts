@@ -11,3 +11,4 @@ export const roleRoutes: Record<Role, NavItem[]> = {
 };
 
 export { adminRoutes, ownerRoutes, tenantRoutes };
+export * from "./public.route";
