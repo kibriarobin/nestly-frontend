@@ -29,8 +29,7 @@ export default function DemoLogin() {
         onSuccess: async (res) => {
           await queryClient.invalidateQueries({ queryKey: USER_KEY });
           toast.success("Logged in successfully");
-        //   router.push(ROLE_DASHBOARD[res.data.user.role]);
-          router.push("/");
+          router.push(ROLE_DASHBOARD[res.data.user.role]);
           router.refresh();
         },
         onError: (error) => toast.error(getErrorMessage(error)),
