@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMe } from "@/hooks";
+import { useGetMe } from "@/hooks";
 import ThemeToggle from "./ThemeToggle";
 import UserMenu from "./UserMenu";
 
 export default function NavbarActions() {
-  const { data: user, isPending } = useMe();
+  const { data, isPending } = useGetMe();
+const user = data?.data;
 
   return (
     <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@ export const ROLE = {
 
 export type Role = (typeof ROLE)[keyof typeof ROLE];
 
-export const ROLE_HOME: Record<Role, string> = {
+export const ROLE_DASHBOARD: Record<Role, string> = {
   ADMIN: "/admin",
   OWNER: "/owner",
   TENANT: "/dashboard",

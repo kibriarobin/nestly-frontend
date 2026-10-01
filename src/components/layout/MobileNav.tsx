@@ -11,21 +11,25 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ALL_ROLE } from "@/constants/roles";
-import { useMe } from "@/hooks";
 import { cn } from "@/lib/utils";
 import NavLinks from "./NavLinks";
+import { ROLE_DASHBOARD } from "@/constants/roles";
+import { useGetMe } from "@/hooks";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
-  const { data: user } = useMe();
+  const { data } = useGetMe();
+  const user = data?.data;
   const close = () => setOpen(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         aria-label="Open menu"
-        className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "md:hidden")}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon" }),
+          "md:hidden",
+        )}
       >
         <Menu className="size-5" />
       </SheetTrigger>
@@ -38,7 +42,7 @@ export default function MobileNav() {
           <div className="flex flex-col gap-2 border-t pt-4">
             {user ? (
               <Link
-                href={ALL_ROLE[user.role]}
+                href={ROLE_DASHBOARD[user.role]}
                 onClick={close}
                 className={buttonVariants()}
               >
@@ -53,7 +57,11 @@ export default function MobileNav() {
                 >
                   Login
                 </Link>
-                <Link href="/register" onClick={close} className={buttonVariants()}>
+                <Link
+                  href="/register"
+                  onClick={close}
+                  className={buttonVariants()}
+                >
                   Get Started
                 </Link>
               </>

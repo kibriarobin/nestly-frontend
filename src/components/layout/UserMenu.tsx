@@ -1,6 +1,9 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { LayoutDashboard, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -10,14 +13,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ALL_ROLE } from "@/constants/roles";
+import { ROLE_DASHBOARD } from "@/constants/roles";
+import { USER_KEY, useLogout } from "@/hooks";
 import { cn } from "@/lib/utils";
 import type { IUser } from "@/types";
-import { useRouter } from "next/navigation";
+import { getErrorMessage } from "@/utils";
 
 export default function UserMenu({ user }: { user: IUser }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutate: logout, isPending } = useLogout();
+
+  const handleLogout = () =>
+    logout(undefined, {
+      onSuccess: async () => {
+        await queryClient.resetQueries({ queryKey: USER_KEY });
+        toast.success("Logged out successfully");
+        router.push("/login");
+        router.refresh();
+      },
+      onError: (error) => toast.error(getErrorMessage(error)),
+    });
 
   return (
     <DropdownMenu>
@@ -41,11 +57,13 @@ export default function UserMenu({ user }: { user: IUser }) {
           </p>
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push(ALL_ROLE[user.role])}>
+        <DropdownMenuItem
+          onClick={() => router.push(ROLE_DASHBOARD[user.role])}
+        >
           <LayoutDashboard className="size-4" />
           Dashboard
         </DropdownMenuItem>
-        <DropdownMenuItem disabled={isPending} onClick={() => logout()}>
+        <DropdownMenuItem disabled={isPending} onClick={handleLogout}>
           <LogOut className="size-4" />
           Logout
         </DropdownMenuItem>
