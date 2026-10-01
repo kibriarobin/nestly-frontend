@@ -5,7 +5,7 @@ import {
   userLogout,
   userRegistration,
 } from "@/api";
-import { UserProfileResponse } from "@/types/auth.type";
+import type { UserProfileResponse } from "@/types/auth.type";
 
 export const USER_KEY = ["user"] as const;
 

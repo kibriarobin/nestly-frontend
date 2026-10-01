@@ -1,6 +1,6 @@
 import apiClient from "@/lib/clientApi";
-import { ApiResponse } from "@/types";
-import { LoginPayload, LoginResponse, RegistrationPayload, UserProfileResponse } from "@/types/auth.type";
+import type { ApiResponse } from "@/types";
+import type { LoginPayload, LoginResponse, RegistrationPayload, UserProfileResponse } from "@/types/auth.type";
 
 export function userRegistration(payload: RegistrationPayload) {
   return apiClient<ApiResponse<unknown>>("/auth/register", {
