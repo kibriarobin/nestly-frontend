@@ -16,6 +16,7 @@ export interface RegistrationPayload {
   email: string;
   password: string;
   role: "OWNER" | "TENANT";
+  phone?: string;
 }
 
 export interface LoginData {
