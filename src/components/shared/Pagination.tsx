@@ -30,7 +30,6 @@ export default function Pagination({
   basePath,
   params = {},
 }: PaginationProps) {
-  if (totalPages <= 1) return null;
 
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
