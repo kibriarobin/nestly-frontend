@@ -9,7 +9,7 @@ import UserMenu from "./UserMenu";
 
 export default function NavbarActions() {
   const { data, isPending } = useGetMe();
-const user = data?.data;
+  const user = data?.data;
 
   return (
     <div className="flex items-center gap-2">

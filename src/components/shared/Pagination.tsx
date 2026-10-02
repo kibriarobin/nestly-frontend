@@ -30,7 +30,6 @@ export default function Pagination({
   basePath,
   params = {},
 }: PaginationProps) {
-
   const hasPrev = page > 1;
   const hasNext = page < totalPages;
   const disabled = "pointer-events-none opacity-50";

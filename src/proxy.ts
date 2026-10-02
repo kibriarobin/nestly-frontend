@@ -36,7 +36,9 @@ export function proxy(request: NextRequest) {
   const hasRefresh = request.cookies.has(REFRESH_TOKEN);
 
   if (AUTH_PAGES.includes(pathname)) {
-    return role ? redirectTo(request, ROLE_DASHBOARD[role]) : NextResponse.next();
+    return role
+      ? redirectTo(request, ROLE_DASHBOARD[role])
+      : NextResponse.next();
   }
 
   const match = Object.entries(PROTECTED).find(
@@ -53,5 +55,11 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/owner/:path*", "/dashboard/:path*", "/login", "/register"],
+  matcher: [
+    "/admin/:path*",
+    "/owner/:path*",
+    "/dashboard/:path*",
+    "/login",
+    "/register",
+  ],
 };

@@ -1,7 +1,6 @@
 import { ofetch } from "ofetch";
 import type { ApiErrorBody } from "@/types";
 
-
 export class ApiError extends Error {
   status: number;
   errors?: unknown[];
