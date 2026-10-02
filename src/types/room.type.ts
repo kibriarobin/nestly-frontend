@@ -1,0 +1,26 @@
+import type { FlatStatus } from "./status.type";
+
+export interface IRoomFlat {
+  id: string;
+  name: string;
+  property: { id: string; title: string; city: string };
+}
+
+export interface IRoom {
+  id: string;
+  flatId: string;
+  name: string;
+  rent: string | null;
+  description: string | null;
+  status: FlatStatus;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  flat?: IRoomFlat;
+}
+
+export type IRoomSummary = Pick<IRoom, "id" | "status">;
+
+export interface IRoomDetail extends IRoom {
+  flat: IRoomFlat;
+}

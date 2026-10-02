@@ -1,4 +1,6 @@
-export type PropertyStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
+// types/property.type.ts
+import type { IFlat } from "./flat.type";
+import type { PropertyStatus } from "./status.type";
 
 export interface IPropertyOwner {
   id: string;
@@ -18,4 +20,26 @@ export interface IProperty {
   updatedAt: string;
   deletedAt: string | null;
   owner?: IPropertyOwner;
+}
+
+export interface IPropertyDetail extends IProperty {
+  flats: IFlat[];
+}
+
+export interface ICreatePropertyPayload {
+  title: string;
+  address: string;
+  city: string;
+  description: string;
+}
+
+export type IUpdatePropertyPayload = Partial<ICreatePropertyPayload>;
+
+export type PropertyStatusUpdate = Exclude<PropertyStatus, "PENDING">;
+
+export interface IPropertyQuery {
+  searchTerm?: string;
+  status?: PropertyStatus;
+  page?: number;
+  limit?: number;
 }
