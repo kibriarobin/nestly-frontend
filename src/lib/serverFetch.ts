@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import type { ApiErrorBody } from "@/types";
 
 export async function serverFetch<T>(
@@ -5,6 +6,8 @@ export async function serverFetch<T>(
   init?: RequestInit,
 ): Promise<T> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, init);
+
+  if (res.status === 404) notFound();
 
   if (!res.ok) {
     const body = (await res
