@@ -3,6 +3,7 @@ import {
   createProperty,
   deleteProperty,
   getAllProperties,
+  getAllPropertiesForAdmin,
   getMyProperties,
   updateProperty,
   updatePropertyStatus,
@@ -29,6 +30,13 @@ export function useProperties(query: IPropertyQuery = {}) {
   return useQuery({
     queryKey: [...PROPERTY_KEYS.all, query],
     queryFn: () => getAllProperties(query),
+  });
+}
+
+export function useAdminProperties(params: IPropertyQuery) {
+  return useQuery({
+    queryKey: [...PROPERTY_KEYS.all, "admin", params],
+    queryFn: () => getAllPropertiesForAdmin(params),
   });
 }
 

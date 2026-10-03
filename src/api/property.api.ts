@@ -33,6 +33,12 @@ export function getAllProperties(
   return apiClient(`/properties?${params}`);
 }
 
+export function getAllPropertiesForAdmin(
+  params: IPropertyQuery,
+): Promise<PaginatedResponse<IProperty>> {
+  return apiClient("/properties/admin/list", { params });
+}
+
 export function updateProperty(
   id: string,
   payload: IUpdatePropertyPayload,

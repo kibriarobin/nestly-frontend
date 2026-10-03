@@ -67,6 +67,7 @@ export default function LoginForm() {
             id="password"
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
+            placeholder="Enter password"
             className="pr-10"
             aria-invalid={!!errors.password}
             {...register("password")}

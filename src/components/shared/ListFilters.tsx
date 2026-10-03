@@ -3,10 +3,9 @@
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useDebounce } from "@/hooks";
 
 export interface FilterSelect {
   param: string;
@@ -32,8 +31,9 @@ export default function ListFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [value, setValue] = useState(searchParams.get("searchTerm") ?? "");
-  const debounced = useDebounce(value.trim());
+  const urlTerm = searchParams.get("searchTerm") ?? "";
+  const [value, setValue] = useState(urlTerm);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const updateParam = useCallback(
     (key: string, next: string) => {
@@ -50,11 +50,37 @@ export default function ListFilters({
     [pathname, router, searchParams],
   );
 
+  const latestUpdate = useRef(updateParam);
   useEffect(() => {
-    if (debounced !== (searchParams.get("searchTerm") ?? "")) {
-      updateParam("searchTerm", debounced);
-    }
-  }, [debounced, searchParams, updateParam]);
+    latestUpdate.current = updateParam;
+  });
+
+  useEffect(() => {
+    if (timer.current === null) setValue(urlTerm);
+  }, [urlTerm]);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  const handleSearch = (next: string) => {
+    setValue(next);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      timer.current = null;
+      latestUpdate.current("searchTerm", next.trim());
+    }, 400);
+  };
+
+  const clearParams = new URLSearchParams(searchParams.toString());
+  clearParams.delete("searchTerm");
+  clearParams.delete("page");
+  for (const select of selects) clearParams.delete(select.param);
+  const clearQuery = clearParams.toString();
+  const clearHref = clearQuery ? `${pathname}?${clearQuery}` : pathname;
 
   const hasFilters =
     searchParams.has("searchTerm") ||
@@ -67,7 +93,7 @@ export default function ListFilters({
         <Input
           type="search"
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
           placeholder={searchPlaceholder}
           aria-label={searchPlaceholder}
           className="pl-9"
@@ -102,7 +128,7 @@ export default function ListFilters({
 
       {hasFilters && (
         <Link
-          href={pathname}
+          href={clearHref}
           className={buttonVariants({ variant: "ghost", size: "sm" })}
         >
           Clear filters
