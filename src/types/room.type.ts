@@ -1,5 +1,12 @@
 import type { FlatStatus } from "./status.type";
 
+export interface ICreateRoomPayload {
+  flatId: string;
+  name: string;
+  rent: number;
+  description: string;
+}
+
 export interface IRoomFlat {
   id: string;
   name: string;

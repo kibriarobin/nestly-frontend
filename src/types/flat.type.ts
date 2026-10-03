@@ -1,6 +1,14 @@
 import type { IRoom, IRoomSummary } from "./room.type";
 import type { FlatStatus, PropertyStatus } from "./status.type";
 
+export interface ICreateFlatPayload {
+  propertyId: string;
+  name: string;
+  floor: number;
+  rent: number;
+  description: string;
+}
+
 export interface IFlatProperty {
   id: string;
   title: string;

@@ -1,4 +1,3 @@
-// types/property.type.ts
 import type { IFlat } from "./flat.type";
 import type { PropertyStatus } from "./status.type";
 
@@ -20,6 +19,10 @@ export interface IProperty {
   updatedAt: string;
   deletedAt: string | null;
   owner?: IPropertyOwner;
+}
+
+export interface IMyProperty extends IProperty {
+  _count?: { flats: number };
 }
 
 export interface IPropertyDetail extends IProperty {
