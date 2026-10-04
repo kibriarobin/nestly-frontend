@@ -5,6 +5,7 @@ import {
   getAllProperties,
   getAllPropertiesForAdmin,
   getMyProperties,
+  getPropertyDetail,
   updateProperty,
   updatePropertyStatus,
 } from "@/api";
@@ -17,6 +18,7 @@ import type {
 export const PROPERTY_KEYS = {
   mine: ["properties", "mine"] as const,
   all: ["properties", "all"] as const,
+  detail: (id: string) => ["properties", "detail", id] as const,
 };
 
 export function useMyProperties() {
@@ -37,6 +39,13 @@ export function useAdminProperties(params: IPropertyQuery) {
   return useQuery({
     queryKey: [...PROPERTY_KEYS.all, "admin", params],
     queryFn: () => getAllPropertiesForAdmin(params),
+  });
+}
+
+export function usePropertyDetail(id: string) {
+  return useQuery({
+    queryKey: PROPERTY_KEYS.detail(id),
+    queryFn: () => getPropertyDetail(id),
   });
 }
 

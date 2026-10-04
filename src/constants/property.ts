@@ -21,3 +21,10 @@ export function isPropertySortKey(
 ): value is PropertySortKey {
   return !!value && value in PROPERTY_SORT;
 }
+
+export const PROPERTY_STATUS_NOTE: Partial<Record<PropertyStatus, string>> = {
+  PENDING: "Waiting for admin approval. It will appear publicly once approved.",
+  REJECTED:
+    "This listing was rejected. Create a new listing with updated details.",
+  SUSPENDED: "An admin suspended this listing. It is hidden from the public.",
+};

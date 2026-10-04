@@ -1,4 +1,4 @@
-import type { IRoom, IRoomSummary } from "./room.type";
+import type { IRoom } from "./room.type";
 import type { FlatStatus, PropertyStatus } from "./status.type";
 
 export interface ICreateFlatPayload {
@@ -29,7 +29,15 @@ export interface IFlat {
   updatedAt: string;
   deletedAt: string | null;
   property?: IFlatProperty;
-  rooms?: IRoomSummary[];
+  rooms?: IRoom[];
+}
+
+export interface IUpdateFlatPayload {
+  name?: string;
+  floor?: number;
+  rent?: number;
+  description?: string;
+  status?: FlatStatus;
 }
 
 export interface IFlatDetail extends IFlat {

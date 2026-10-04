@@ -4,6 +4,7 @@ import type {
   ICreatePropertyPayload,
   IMyProperty,
   IProperty,
+  IPropertyDetail,
   IPropertyQuery,
   IUpdatePropertyPayload,
   PaginatedResponse,
@@ -37,6 +38,12 @@ export function getAllPropertiesForAdmin(
   params: IPropertyQuery,
 ): Promise<PaginatedResponse<IProperty>> {
   return apiClient("/properties/admin/list", { params });
+}
+
+export function getPropertyDetail(
+  id: string,
+): Promise<ApiResponse<IPropertyDetail>> {
+  return apiClient(`/properties/${id}`);
 }
 
 export function updateProperty(

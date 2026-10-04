@@ -26,6 +26,13 @@ export interface IRoom {
   flat?: IRoomFlat;
 }
 
+export interface IUpdateRoomPayload {
+  name?: string;
+  rent?: number;
+  description?: string;
+  status?: FlatStatus;
+}
+
 export type IRoomSummary = Pick<IRoom, "id" | "status">;
 
 export interface IRoomDetail extends IRoom {
