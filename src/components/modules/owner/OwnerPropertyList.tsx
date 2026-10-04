@@ -10,16 +10,10 @@ import EmptyState from "@/components/shared/EmptyState";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { RowListSkeleton } from "@/components/skeletons";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { PROPERTY_STATUS_NOTE } from "@/constants/property";
 import { PROPERTY_KEYS, useDeleteProperty, useMyProperties } from "@/hooks";
-import type { IMyProperty, PropertyStatus } from "@/types";
+import type { IMyProperty } from "@/types";
 import { formatDate, getErrorMessage } from "@/utils";
-
-const STATUS_NOTE: Partial<Record<PropertyStatus, string>> = {
-  PENDING: "Waiting for admin approval. It will appear publicly once approved.",
-  REJECTED:
-    "This listing was rejected. Create a new listing with updated details.",
-  SUSPENDED: "An admin suspended this listing. It is hidden from the public.",
-};
 
 export default function OwnerPropertyList() {
   const queryClient = useQueryClient();
@@ -93,14 +87,20 @@ export default function OwnerPropertyList() {
                 {property._count?.flats ?? 0} flats · Added{" "}
                 {formatDate(property.createdAt)}
               </p>
-              {STATUS_NOTE[property.status] && (
+              {PROPERTY_STATUS_NOTE[property.status] && (
                 <p className="text-xs text-warning">
-                  {STATUS_NOTE[property.status]}
+                  {PROPERTY_STATUS_NOTE[property.status]}
                 </p>
               )}
             </div>
 
-            <div className="flex shrink-0 gap-2">
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <Link
+                href={`/owner/properties/${property.id}`}
+                className={buttonVariants({ size: "sm" })}
+              >
+                Manage
+              </Link>
               {property.status === "APPROVED" && (
                 <Link
                   href={`/properties/${property.id}`}

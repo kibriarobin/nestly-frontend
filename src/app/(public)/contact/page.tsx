@@ -1,7 +1,7 @@
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import type { Metadata } from "next";
-import { Card, CardContent } from "@/components/ui/card";
 import ContactForm from "@/components/form/ContactForm";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     "Get in touch with the Nestly team for support, partnerships or general questions.",
 };
 
- const SITE_CONTACT = {
+const SITE_CONTACT = {
   email: "support@nestly.com",
   phone: "+880 1700-000000",
   address: "House 12, Road 5, Banani, Dhaka 1213, Bangladesh",
