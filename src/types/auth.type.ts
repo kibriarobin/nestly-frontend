@@ -26,3 +26,8 @@ export interface LoginData {
 
 export type LoginResponse = ApiResponse<LoginData>;
 export type UserProfileResponse = ApiResponse<IUser>;
+
+export interface UpdateProfilePayload {
+  name?: string;
+  phone?: string;
+}

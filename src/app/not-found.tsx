@@ -19,7 +19,7 @@ export default function NotFound() {
 
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          404 — Page not found
+          404 - Page not found
         </h1>
         <p className="mx-auto max-w-sm text-muted-foreground">
           The page you're looking for doesn't exist, or the listing may have

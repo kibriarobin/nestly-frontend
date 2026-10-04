@@ -4,6 +4,7 @@ import type {
   LoginPayload,
   LoginResponse,
   RegistrationPayload,
+  UpdateProfilePayload,
   UserProfileResponse,
 } from "@/types/auth.type";
 
@@ -29,4 +30,10 @@ export function userLogout() {
 
 export function getUserProfile(): Promise<UserProfileResponse> {
   return apiClient("/users/me");
+}
+
+export function updateUserProfile(
+  payload: UpdateProfilePayload,
+): Promise<UserProfileResponse> {
+  return apiClient("/users/me", { method: "PATCH", body: payload });
 }

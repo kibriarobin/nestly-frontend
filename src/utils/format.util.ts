@@ -16,6 +16,11 @@ export function formatRent(value: string | number | null | undefined) {
     : `${currency.format(amount)}/mo`;
 }
 
+export function formatCurrency(value: string | number | null | undefined) {
+  const amount = Number(value ?? 0);
+  return Number.isNaN(amount) ? currency.format(0) : currency.format(amount);
+}
+
 export function formatDate(value: string) {
   return dateFormatter.format(new Date(value));
 }
