@@ -1,38 +1,30 @@
 "use client";
 
-import { CheckCircle2, Clock, TriangleAlert, Wallet } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  Receipt,
+  TriangleAlert,
+  Wallet,
+} from "lucide-react";
+import Link from "next/link";
 import EmptyState from "@/components/shared/EmptyState";
 import StatCard from "@/components/shared/StatCard";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { StatsSkeleton } from "@/components/skeletons";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useOwnerBookings } from "@/hooks";
-import type { IOwnerBooking } from "@/types";
 import {
-  formatCurrency,
+  buildMonthlyEarnings,
   formatDate,
-  formatRent,
+  formatMoney,
   getErrorMessage,
+  isSameMonth,
 } from "@/utils";
+import EarningsChart from "./EarningsChart";
 
-function sumPaid(bookings: IOwnerBooking[]) {
-  return bookings
-    .filter((booking) => booking.payment?.status === "PAID")
-    .reduce(
-      (total, booking) => total + Number(booking.payment?.amount ?? 0),
-      0,
-    );
-}
-
-function sumPending(bookings: IOwnerBooking[]) {
-  return bookings
-    .filter(
-      (booking) =>
-        booking.status !== "CANCELLED" &&
-        (!booking.payment || booking.payment.status === "PENDING"),
-    )
-    .reduce((total, booking) => total + Number(booking.rent), 0);
-}
+const RECENT_LIMIT = 8;
 
 export default function OwnerEarnings() {
   const { data, isPending, isError, error, refetch } = useOwnerBookings();
@@ -51,84 +43,127 @@ export default function OwnerEarnings() {
   }
 
   const bookings = data.data;
-  const totalEarned = sumPaid(bookings);
-  const pendingAmount = sumPending(bookings);
-  const confirmedCount = bookings.filter(
-    (b) => b.status === "CONFIRMED",
-  ).length;
-  const completedCount = bookings.filter(
-    (b) => b.status === "COMPLETED",
-  ).length;
 
   if (bookings.length === 0) {
     return (
       <EmptyState
         icon={Wallet}
-        title="No bookings yet"
-        description="Once a tenant's application is approved and they pay, your earnings will show up here."
+        title="No earnings yet"
+        description="Earnings appear here once tenants pay for the bookings you approved."
+        action={
+          <Link href="/owner/applications" className={buttonVariants()}>
+            Review applications
+          </Link>
+        }
       />
     );
   }
+
+  const payments = bookings.flatMap((booking) =>
+    booking.payment?.status === "PAID"
+      ? [
+          {
+            booking,
+            amount: Number(booking.payment.amount) || 0,
+            date: booking.payment.paidAt ?? booking.createdAt,
+            transactionId: booking.payment.transactionId,
+          },
+        ]
+      : [],
+  );
+
+  const totalEarned = payments.reduce((sum, item) => sum + item.amount, 0);
+  const thisMonth = payments
+    .filter((item) => isSameMonth(item.date))
+    .reduce((sum, item) => sum + item.amount, 0);
+  const confirmed = bookings.filter((b) => b.status === "CONFIRMED").length;
+  const awaiting = bookings
+    .filter((b) => b.status === "PENDING")
+    .reduce((sum, b) => sum + (Number(b.rent) || 0), 0);
+
+  const monthly = buildMonthlyEarnings(
+    payments.map(({ amount, date }) => ({ amount, date })),
+  );
+  const recent = [...payments]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, RECENT_LIMIT);
 
   return (
     <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Total earned"
-          value={formatCurrency(totalEarned)}
+          value={formatMoney(totalEarned)}
           icon={Wallet}
           tone="success"
         />
         <StatCard
-          label="Pending payment"
-          value={formatCurrency(pendingAmount)}
-          icon={Clock}
-          tone="warning"
+          label="This month"
+          value={formatMoney(thisMonth)}
+          icon={CalendarDays}
         />
         <StatCard
           label="Confirmed bookings"
-          value={confirmedCount}
+          value={confirmed}
           icon={CheckCircle2}
-          tone="default"
         />
         <StatCard
-          label="Completed bookings"
-          value={completedCount}
-          icon={CheckCircle2}
-          tone="success"
+          label="Awaiting payment"
+          value={formatMoney(awaiting)}
+          icon={Clock}
+          tone="warning"
+          href="/owner/applications?status=approved"
         />
       </div>
 
+      <section className="space-y-4 rounded-xl border bg-card p-5">
+        <h2 className="text-lg font-semibold">Earnings by month</h2>
+        <EarningsChart data={monthly} />
+      </section>
+
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Booking history</h2>
-        <ul className="space-y-4">
-          {bookings.map((booking) => (
-            <li
-              key={booking.id}
-              className="flex flex-col gap-4 rounded-xl border bg-card p-5 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="min-w-0 space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-semibold">
-                    {booking.flat.property.title} — {booking.flat.name}
-                    {booking.room && ` · ${booking.room.name}`}
-                  </h3>
-                  <StatusBadge status={booking.status} />
-                  {booking.payment && (
-                    <StatusBadge status={booking.payment.status} />
-                  )}
+        <h2 className="flex items-center gap-2 text-lg font-semibold">
+          <Receipt className="size-5" />
+          Recent payments
+        </h2>
+
+        {recent.length === 0 ? (
+          <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+            No payments received yet. Approved bookings are waiting for the
+            tenant to pay.
+          </p>
+        ) : (
+          <ul className="divide-y rounded-xl border bg-card">
+            {recent.map(({ booking, amount, date, transactionId }) => (
+              <li
+                key={booking.id}
+                className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0 space-y-1">
+                  <p className="truncate font-medium">
+                    {booking.room?.name ?? booking.flat.name}
+                    <span className="font-normal text-muted-foreground">
+                      {" "}
+                      · {booking.flat.property.title}
+                    </span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {booking.tenant.name} · {formatDate(date)}
+                  </p>
+                  <p className="truncate font-mono text-xs text-muted-foreground">
+                    {transactionId}
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  {booking.tenant.name} ({booking.tenant.email})
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {formatRent(booking.rent)} · Booked{" "}
-                  {formatDate(booking.createdAt)}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+                <div className="flex shrink-0 items-center gap-3">
+                  <StatusBadge status="PAID" />
+                  <p className="text-lg font-semibold text-primary">
+                    {formatMoney(amount)}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

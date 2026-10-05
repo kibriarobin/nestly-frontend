@@ -9,7 +9,7 @@ export default function OwnerEarningsPage() {
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">Earnings</h1>
         <p className="text-sm text-muted-foreground">
-          Track payments and booking activity across your listings.
+          Rent received from confirmed bookings.
         </p>
       </div>
       <OwnerEarnings />
