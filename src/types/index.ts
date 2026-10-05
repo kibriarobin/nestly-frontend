@@ -3,6 +3,7 @@ export * from "./application.type";
 export * from "./auth.type";
 export * from "./booking.type";
 export * from "./flat.type";
+export * from "./payment.type";
 export * from "./property.type";
 export * from "./room.type";
 export * from "./sidebar.type";
