@@ -16,6 +16,7 @@ import type {
 } from "@/types";
 
 export const PROPERTY_KEYS = {
+  root: ["properties"] as const,
   mine: ["properties", "mine"] as const,
   all: ["properties", "all"] as const,
   detail: (id: string) => ["properties", "detail", id] as const,

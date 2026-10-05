@@ -17,6 +17,7 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel?: string;
+  variant?: "default" | "destructive";
   pending?: boolean;
   onConfirm: () => void;
 }
@@ -27,6 +28,7 @@ export default function ConfirmDialog({
   title,
   description,
   confirmLabel = "Delete",
+  variant = "destructive",
   pending = false,
   onConfirm,
 }: ConfirmDialogProps) {
@@ -45,7 +47,7 @@ export default function ConfirmDialog({
           >
             Cancel
           </Button>
-          <Button variant="destructive" disabled={pending} onClick={onConfirm}>
+          <Button variant={variant} disabled={pending} onClick={onConfirm}>
             {pending && <Loader2 className="size-4 animate-spin" />}
             {confirmLabel}
           </Button>

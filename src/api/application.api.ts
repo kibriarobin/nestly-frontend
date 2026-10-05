@@ -4,6 +4,7 @@ import type {
   ApplicationStatus,
   IApplication,
   ICreateApplicationPayload,
+  IOwnerApplication,
 } from "@/types";
 
 interface ApplicationResult {
@@ -25,4 +26,24 @@ export function cancelApplication(
   id: string,
 ): Promise<ApiResponse<ApplicationResult>> {
   return apiClient(`/applications/cancel/${id}`, { method: "PATCH" });
+}
+
+export function getOwnerApplications(): Promise<
+  ApiResponse<IOwnerApplication[]>
+> {
+  return apiClient("/applications/owner-applications");
+}
+
+export function approveApplication(
+  id: string,
+): Promise<
+  ApiResponse<{ application: ApplicationResult; booking: { id: string } }>
+> {
+  return apiClient(`/applications/approve/${id}`, { method: "PATCH" });
+}
+
+export function rejectApplication(
+  id: string,
+): Promise<ApiResponse<ApplicationResult>> {
+  return apiClient(`/applications/reject/${id}`, { method: "PATCH" });
 }
