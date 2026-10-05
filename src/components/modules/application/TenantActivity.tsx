@@ -5,6 +5,8 @@ import {
   CheckCircle2,
   ClipboardList,
   Clock,
+  CreditCard,
+  Loader2,
   MapPin,
   SearchX,
   TriangleAlert,
@@ -23,11 +25,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   APPLICATION_KEYS,
+  PROPERTY_KEYS,
   useCancelApplication,
+  useCancelBooking,
+  useInitiatePayment,
   useMyApplications,
 } from "@/hooks";
 import type { ApplicationStatus, IApplication } from "@/types";
-import { formatDate, formatRent, getErrorMessage } from "@/utils";
+import {
+  formatDate,
+  formatMoney,
+  formatRent,
+  getErrorMessage,
+  isSslCommerzUrl,
+} from "@/utils";
 
 const PAGE_SIZE = 6;
 
@@ -54,12 +65,24 @@ const TABS: {
 const isCancellable = (status: ApplicationStatus) =>
   status === "PENDING" || status === "UNDER_REVIEW";
 
+type Target =
+  | { kind: "withdraw"; application: IApplication }
+  | { kind: "booking"; application: IApplication };
+
 export default function TenantActivity() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const { data, isPending, isError, error, refetch } = useMyApplications();
-  const { mutate: cancel, isPending: cancelling } = useCancelApplication();
-  const [target, setTarget] = useState<IApplication | null>(null);
+  const { mutate: cancelApplication, isPending: withdrawing } =
+    useCancelApplication();
+  const { mutate: cancelBooking, isPending: cancellingBooking } =
+    useCancelBooking();
+  const {
+    mutate: startPayment,
+    isPending: startingPayment,
+    variables: payingBookingId,
+  } = useInitiatePayment();
+  const [target, setTarget] = useState<Target | null>(null);
 
   const tab =
     TABS.find((item) => item.value === searchParams.get("status")) ?? TABS[0];
@@ -68,20 +91,49 @@ export default function TenantActivity() {
   const tabHref = (value: string) =>
     value === "all" ? "/dashboard" : `/dashboard?status=${value}`;
 
-  const confirmCancel = () => {
+  const refresh = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: APPLICATION_KEYS.mine }),
+      queryClient.invalidateQueries({ queryKey: PROPERTY_KEYS.root }),
+    ]);
+
+  const confirmTarget = () => {
     if (!target) return;
-    cancel(target.id, {
+    const { kind, application } = target;
+
+    const options = {
       onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: APPLICATION_KEYS.mine,
-        });
-        toast.success("Application withdrawn");
+        await refresh();
+        toast.success(
+          kind === "withdraw" ? "Application withdrawn" : "Booking cancelled",
+        );
         setTarget(null);
       },
-      onError: (err) => {
+      onError: (err: unknown) => {
         toast.error(getErrorMessage(err));
         setTarget(null);
       },
+    };
+
+    if (kind === "withdraw") {
+      cancelApplication(application.id, options);
+    } else if (application.booking) {
+      cancelBooking(application.booking.id, options);
+    }
+  };
+
+  const payNow = (application: IApplication) => {
+    if (!application.booking) return;
+    startPayment(application.booking.id, {
+      onSuccess: (res) => {
+        const url = res.data.paymentUrl;
+        if (isSslCommerzUrl(url)) {
+          window.location.assign(url);
+        } else {
+          toast.error("Received an unexpected payment link. Please try again.");
+        }
+      },
+      onError: (err) => toast.error(getErrorMessage(err)),
     });
   };
 
@@ -136,6 +188,10 @@ export default function TenantActivity() {
     currentPage * PAGE_SIZE,
   );
 
+  const targetName = target
+    ? (target.application.room?.name ?? target.application.flat.name)
+    : "";
+
   return (
     <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-3">
@@ -146,9 +202,9 @@ export default function TenantActivity() {
           tone="warning"
         />
         <StatCard
-          label="Approved"
+          label="Awaiting payment"
           value={count((s) => s === "APPROVED")}
-          icon={ClipboardList}
+          icon={CreditCard}
         />
         <StatCard
           label="Confirmed"
@@ -191,6 +247,11 @@ export default function TenantActivity() {
             const href = isRoom
               ? `/rooms/${application.room?.id}`
               : `/flats/${application.flat.id}`;
+            const awaitingPayment =
+              application.status === "APPROVED" &&
+              application.booking?.status === "PENDING";
+            const busyPaying =
+              startingPayment && payingBookingId === application.booking?.id;
 
             return (
               <li
@@ -226,15 +287,46 @@ export default function TenantActivity() {
                       · Applied {formatDate(application.createdAt)}
                     </p>
                   </div>
-                  {isCancellable(application.status) && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setTarget(application)}
-                    >
-                      Withdraw
-                    </Button>
-                  )}
+
+                  <div className="flex shrink-0 flex-wrap gap-2">
+                    {isCancellable(application.status) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setTarget({ kind: "withdraw", application })
+                        }
+                      >
+                        Withdraw
+                      </Button>
+                    )}
+                    {awaitingPayment && (
+                      <>
+                        <Button
+                          size="sm"
+                          disabled={startingPayment}
+                          onClick={() => payNow(application)}
+                        >
+                          {busyPaying ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <CreditCard className="size-4" />
+                          )}
+                          Pay {formatMoney(application.rent)}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={startingPayment}
+                          onClick={() =>
+                            setTarget({ kind: "booking", application })
+                          }
+                        >
+                          Cancel booking
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {application.message && (
@@ -242,10 +334,15 @@ export default function TenantActivity() {
                     {application.message}
                   </p>
                 )}
-                {application.status === "APPROVED" && (
+                {awaitingPayment && (
                   <p className="text-sm text-warning">
-                    The owner approved your application. Payment is the next
-                    step to confirm your booking.
+                    The owner approved your application. The listing is reserved
+                    for you until you pay to confirm the booking.
+                  </p>
+                )}
+                {application.status === "CONFIRMED" && (
+                  <p className="text-sm text-success">
+                    Payment received. Your booking is confirmed.
                   </p>
                 )}
               </li>
@@ -266,11 +363,21 @@ export default function TenantActivity() {
         onOpenChange={(open) => {
           if (!open) setTarget(null);
         }}
-        title="Withdraw this application?"
-        description={`Your application for "${target?.room?.name ?? target?.flat.name ?? ""}" will be cancelled. You can apply again later.`}
-        confirmLabel="Withdraw"
-        pending={cancelling}
-        onConfirm={confirmCancel}
+        title={
+          target?.kind === "booking"
+            ? "Cancel this booking?"
+            : "Withdraw this application?"
+        }
+        description={
+          target?.kind === "booking"
+            ? `"${targetName}" becomes available to others again and this application is cancelled. You can apply again later.`
+            : `Your application for "${targetName}" will be cancelled. You can apply again later.`
+        }
+        confirmLabel={
+          target?.kind === "booking" ? "Cancel booking" : "Withdraw"
+        }
+        pending={withdrawing || cancellingBooking}
+        onConfirm={confirmTarget}
       />
     </div>
   );
