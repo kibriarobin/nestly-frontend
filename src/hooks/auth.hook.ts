@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   getUserProfile,
-  updateUserProfile,
   userLogin,
   userLogout,
   userRegistration,
@@ -28,8 +27,4 @@ export function useGetMe() {
     queryFn: getUserProfile,
     retry: false,
   });
-}
-
-export function useUpdateProfile() {
-  return useMutation({ mutationFn: updateUserProfile });
 }

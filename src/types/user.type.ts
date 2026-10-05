@@ -17,3 +17,7 @@ export interface IUser {
   updatedAt: string;
   deletedAt: string | null;
 }
+
+export interface IUpdateProfilePayload {
+  name: string;
+}

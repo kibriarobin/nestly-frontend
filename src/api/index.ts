@@ -7,3 +7,4 @@ export * from "./property.api";
 export * from "./property.server";
 export * from "./room.api";
 export * from "./room.server";
+export * from "./user.api";

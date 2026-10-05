@@ -1,16 +1,28 @@
 import apiClient from "@/lib/clientApi";
-import type { ApiResponse, IOwnerApplication } from "@/types";
+import type {
+  ApiResponse,
+  ApplicationStatus,
+  IApplication,
+  ICreateApplicationPayload,
+} from "@/types";
 
-export function getOwnerApplications(): Promise<
-  ApiResponse<IOwnerApplication[]>
-> {
-  return apiClient("/applications/owner-applications");
+interface ApplicationResult {
+  id: string;
+  status: ApplicationStatus;
 }
 
-export function approveApplication(id: string): Promise<ApiResponse<unknown>> {
-  return apiClient(`/applications/approve/${id}`, { method: "PATCH" });
+export function createApplication(
+  payload: ICreateApplicationPayload,
+): Promise<ApiResponse<ApplicationResult>> {
+  return apiClient("/applications", { method: "POST", body: payload });
 }
 
-export function rejectApplication(id: string): Promise<ApiResponse<unknown>> {
-  return apiClient(`/applications/reject/${id}`, { method: "PATCH" });
+export function getMyApplications(): Promise<ApiResponse<IApplication[]>> {
+  return apiClient("/applications/my-applications");
+}
+
+export function cancelApplication(
+  id: string,
+): Promise<ApiResponse<ApplicationResult>> {
+  return apiClient(`/applications/cancel/${id}`, { method: "PATCH" });
 }

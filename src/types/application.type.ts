@@ -1,38 +1,38 @@
-import type { ApplicationStatus, RentalType } from "./status.type";
+import type {
+  ApplicationStatus,
+  BookingStatus,
+  RentalType,
+} from "./status.type";
 
-export interface IApplicationTenant {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string | null;
+export interface ICreateApplicationPayload {
+  flatId: string;
+  roomId?: string;
+  rentalType: RentalType;
+  message?: string;
 }
 
-export interface IApplicationFlat {
+export interface IApplicationBooking {
   id: string;
-  name: string;
-  property: { title: string };
+  status: BookingStatus;
 }
 
-export interface IApplicationRoom {
-  id: string;
-  name: string;
-}
-
-export interface IOwnerApplication {
+export interface IApplication {
   id: string;
   tenantId: string;
   flatId: string;
   roomId: string | null;
   rentalType: RentalType;
   rent: string;
-  status: ApplicationStatus;
   message: string | null;
-  appliedAt: string;
+  status: ApplicationStatus;
   approvedAt: string | null;
-  confirmedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  tenant: IApplicationTenant;
-  flat: IApplicationFlat;
-  room: IApplicationRoom | null;
+  flat: {
+    id: string;
+    name: string;
+    property: { title: string; city?: string };
+  };
+  room: { id: string; name: string } | null;
+  booking?: IApplicationBooking | null;
 }

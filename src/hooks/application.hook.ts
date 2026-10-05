@@ -1,26 +1,22 @@
+// hooks/application.hook.ts
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  approveApplication,
-  getOwnerApplications,
-  rejectApplication,
-} from "@/api";
+import { cancelApplication, createApplication, getMyApplications } from "@/api";
 
 export const APPLICATION_KEYS = {
-  owner: ["applications", "owner"] as const,
+  mine: ["applications", "mine"] as const,
 };
 
-export function useOwnerApplications() {
+export function useMyApplications() {
   return useQuery({
-    queryKey: APPLICATION_KEYS.owner,
-    queryFn: getOwnerApplications,
-    refetchInterval: 30_000,
+    queryKey: APPLICATION_KEYS.mine,
+    queryFn: getMyApplications,
   });
 }
 
-export function useApproveApplication() {
-  return useMutation({ mutationFn: approveApplication });
+export function useCreateApplication() {
+  return useMutation({ mutationFn: createApplication });
 }
 
-export function useRejectApplication() {
-  return useMutation({ mutationFn: rejectApplication });
+export function useCancelApplication() {
+  return useMutation({ mutationFn: cancelApplication });
 }
