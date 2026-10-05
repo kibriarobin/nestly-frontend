@@ -2,6 +2,7 @@ import { ArrowLeft, Building2, DoorOpen, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getRoomById } from "@/api/room.server";
+import ApplyButton from "@/components/modules/application/ApplyButton";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,10 +29,7 @@ export default async function RoomDetailsPage({ params }: Props) {
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
       <Link
         href="/rooms"
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "sm" }),
-          "-ml-3",
-        )}
+        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "-ml-3")}
       >
         <ArrowLeft className="size-4" />
         Back to rooms
@@ -98,6 +96,22 @@ export default async function RoomDetailsPage({ params }: Props) {
           <p className="text-muted-foreground">{room.description}</p>
         </section>
       )}
+
+      <section className="space-y-3 rounded-xl border bg-card p-5">
+        <h2 className="text-lg font-semibold">Interested in this room?</h2>
+        <p className="text-sm text-muted-foreground">
+          Apply to rent just this room. The owner reviews your application
+          before anything is booked.
+        </p>
+        <ApplyButton
+          flatId={flat.id}
+          roomId={room.id}
+          rentalType="ROOM"
+          listingName={room.name}
+          rent={room.rent}
+          status={room.status}
+        />
+      </section>
     </div>
   );
 }

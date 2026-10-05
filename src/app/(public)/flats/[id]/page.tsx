@@ -2,6 +2,7 @@ import { ArrowLeft, Building2, Layers, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getFlatById } from "@/api/flat.server";
+import ApplyButton from "@/components/modules/application/ApplyButton";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -27,10 +28,7 @@ export default async function FlatDetailsPage({ params }: Props) {
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
       <Link
         href="/flats"
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "sm" }),
-          "-ml-3",
-        )}
+        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "-ml-3")}
       >
         <ArrowLeft className="size-4" />
         Back to flats
@@ -87,6 +85,21 @@ export default async function FlatDetailsPage({ params }: Props) {
           <p className="text-muted-foreground">{flat.description}</p>
         </section>
       )}
+
+      <section className="space-y-3 rounded-xl border bg-card p-5">
+        <h2 className="text-lg font-semibold">Interested in this flat?</h2>
+        <p className="text-sm text-muted-foreground">
+          Apply to rent the whole flat. The owner reviews your application
+          before anything is booked.
+        </p>
+        <ApplyButton
+          flatId={flat.id}
+          rentalType="FLAT"
+          listingName={flat.name}
+          rent={flat.rent}
+          status={flat.status}
+        />
+      </section>
 
       <section className="space-y-3">
         <h2 className="flex items-center gap-2 text-lg font-semibold">
