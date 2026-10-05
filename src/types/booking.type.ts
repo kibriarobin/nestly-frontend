@@ -28,20 +28,18 @@ export interface IOwnerBookingPayment {
 
 export interface IOwnerBooking {
   id: string;
-  applicationId: string;
-  tenantId: string;
-  flatId: string;
-  roomId: string | null;
+  status: BookingStatus;
   rentalType: RentalType;
   rent: string;
-  status: BookingStatus;
-  confirmedAt: string | null;
-  cancelledAt: string | null;
-  completedAt: string | null;
   createdAt: string;
-  updatedAt: string;
-  tenant: IOwnerBookingTenant;
-  flat: IOwnerBookingFlat;
-  room: IOwnerBookingRoom | null;
-  payment: IOwnerBookingPayment | null;
+  tenant: { id: string; name: string; email: string; phone: string | null };
+  flat: { id: string; name: string; property: { title: string } };
+  room: { id: string; name: string } | null;
+  payment: {
+    id: string;
+    transactionId: string;
+    amount: string;
+    status: PaymentStatus;
+    paidAt: string | null;
+  } | null;
 }
