@@ -72,7 +72,9 @@ export default function TenantActivity() {
     if (!target) return;
     cancel(target.id, {
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: APPLICATION_KEYS.mine });
+        await queryClient.invalidateQueries({
+          queryKey: APPLICATION_KEYS.mine,
+        });
         toast.success("Application withdrawn");
         setTarget(null);
       },
@@ -181,8 +183,11 @@ export default function TenantActivity() {
       ) : (
         <ul className="space-y-4">
           {visible.map((application) => {
-            const isRoom = application.rentalType === "ROOM" && application.room;
-            const name = isRoom ? application.room?.name : application.flat.name;
+            const isRoom =
+              application.rentalType === "ROOM" && application.room;
+            const name = isRoom
+              ? application.room?.name
+              : application.flat.name;
             const href = isRoom
               ? `/rooms/${application.room?.id}`
               : `/flats/${application.flat.id}`;

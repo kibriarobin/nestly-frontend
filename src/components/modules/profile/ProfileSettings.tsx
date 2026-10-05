@@ -52,7 +52,11 @@ function ProfileForm({ user }: { user: IUser }) {
         <p className="text-sm text-muted-foreground">
           Member since {formatDate(user.createdAt)}
         </p>
-        <FormField id="profile-email" label="Email" hint="Email cannot be changed.">
+        <FormField
+          id="profile-email"
+          label="Email"
+          hint="Email cannot be changed."
+        >
           <Input id="profile-email" value={user.email} readOnly disabled />
         </FormField>
       </section>
@@ -63,7 +67,11 @@ function ProfileForm({ user }: { user: IUser }) {
         className="space-y-4 rounded-xl border p-6"
       >
         <h2 className="text-lg font-semibold">Personal details</h2>
-        <FormField id="profile-name" label="Full name" error={errors.name?.message}>
+        <FormField
+          id="profile-name"
+          label="Full name"
+          error={errors.name?.message}
+        >
           <Input
             id="profile-name"
             autoComplete="name"

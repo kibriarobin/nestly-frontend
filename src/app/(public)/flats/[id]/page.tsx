@@ -28,7 +28,10 @@ export default async function FlatDetailsPage({ params }: Props) {
     <div className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
       <Link
         href="/flats"
-        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "-ml-3")}
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "sm" }),
+          "-ml-3",
+        )}
       >
         <ArrowLeft className="size-4" />
         Back to flats
