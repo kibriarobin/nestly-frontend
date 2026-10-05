@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import OwnerApplicationList from "@/components/modules/owner/OwnerApplicationList";
+import { Suspense } from "react";
+import OwnerApplications from "@/components/modules/application/OwnerApplications";
+import { RowListSkeleton } from "@/components/skeletons";
 
 export const metadata: Metadata = { title: "Applications" };
 
@@ -9,10 +11,12 @@ export default function OwnerApplicationsPage() {
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
         <p className="text-sm text-muted-foreground">
-          Review tenant applications for your listings.
+          Review tenants who applied to your flats and rooms.
         </p>
       </div>
-      <OwnerApplicationList />
+      <Suspense fallback={<RowListSkeleton count={4} />}>
+        <OwnerApplications />
+      </Suspense>
     </div>
   );
 }
