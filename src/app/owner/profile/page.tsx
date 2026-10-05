@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import OwnerProfileForm from "@/components/modules/owner/OwnerProfileForm";
+import ProfileSettings from "@/components/modules/profile/ProfileSettings";
 
 export const metadata: Metadata = { title: "Profile" };
 
@@ -9,10 +9,10 @@ export default function OwnerProfilePage() {
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">Profile</h1>
         <p className="text-sm text-muted-foreground">
-          Update your contact details.
+          Manage your account details.
         </p>
       </div>
-      <OwnerProfileForm />
+      <ProfileSettings />
     </div>
   );
 }
