@@ -29,6 +29,15 @@ const STATUS_TONE: Record<string, keyof typeof TONES> = {
   INACTIVE: "muted",
   REFUNDED: "muted",
   DELETED: "muted",
+  APPROVE: "success",
+  UNBLOCK: "success",
+  PAYMENT: "success",
+  CREATE: "info",
+  UPDATE: "info",
+  REJECT: "danger",
+  BLOCK: "danger",
+  DELETE: "danger",
+  LOGIN: "muted",
 };
 
 export default function StatusBadge({

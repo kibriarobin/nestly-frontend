@@ -30,3 +30,12 @@ export function formatCurrency(value: string | number | null | undefined) {
 export function formatDate(value: string) {
   return dateFormatter.format(new Date(value));
 }
+
+const dateTimeFormatter = new Intl.DateTimeFormat("en-GB", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+export function formatDateTime(value: string) {
+  return dateTimeFormatter.format(new Date(value));
+}
