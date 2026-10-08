@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { RegisterForm } from "@/components/auth";
+import { GoogleLoginButton, RegisterForm } from "@/components/auth";
 import {
   Card,
   CardContent,
@@ -20,8 +20,18 @@ export default function RegisterPage() {
         <CardTitle className="text-2xl">Create your account</CardTitle>
         <CardDescription>Join Nestly in less than a minute</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
         <RegisterForm />
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />
+          OR
+          <span className="h-px flex-1 bg-border" />
+        </div>
+        <GoogleLoginButton />
+        <p className="text-center text-xs text-muted-foreground">
+          Signing up with Google creates a tenant account. Owners should
+          register with email and password.
+        </p>
       </CardContent>
     </Card>
   );

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DemoLogin, LoginForm } from "@/components/auth";
+import { DemoLogin, GoogleLoginButton, LoginForm } from "@/components/auth";
 import {
   Card,
   CardContent,
@@ -23,6 +23,7 @@ export default function LoginPage() {
       </CardHeader>
       <CardContent className="space-y-6">
         <LoginForm />
+        <GoogleLoginButton />
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           <span className="h-px flex-1 bg-border" />
           OR
